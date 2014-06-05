@@ -1,11 +1,10 @@
 if not d3.chart?
     d3.chart = {}
 
-d3.chart.scatter = ->
+d3.chart.line = ->
     margin = {top: 20, right: 20, bottom: 40, left: 70}
     width = 900
     height = 600
-    radius = 3
     legend_square_size = 18
     x_value = (d, i) -> d[0]
     y_value = (d, i) -> d[1]
@@ -78,7 +77,7 @@ d3.chart.scatter = ->
                 .style "text-anchor", "end"
                 .text y_title
             g_enter.append "g"
-                .classed "circles", true
+                .classed "paths", true
             g_enter.append "g"
                 .classed "legends", true
 
@@ -91,68 +90,49 @@ d3.chart.scatter = ->
             g = svg.select "g"
                 .attr "transform", "translate(#{margin.left}, #{margin.top})"
 
-            #update circles
-            circles = g.select ".circles"
-                .selectAll ".circle"
-                .data (d) -> d
+            # if you want a legend update it
+            if legend_square_size?
 
-            circles
-                .enter()
-                .append "circle"
-                .classed "circle", true
+                #update legend
+                legends = g.select "g.legends"
+                    .selectAll "g.legend"
+                    .data color_scale.domain()
 
-            circles
-                .transition()
-                .duration(500)
-                .attr "r", radius
-                .attr "cx", (d) -> x_scale(d.x)
-                .attr "cy", (d) -> y_scale(d.y)
-                .style "fill", (d) -> color_scale(d.color)
+                l_enter = legends
+                    .enter()
+                    .append "g"
+                    .classed "legend", true
 
-            circles
-                .exit()
-                .remove()
+                legends
+                    .each (d) ->
+                        rects = d3.select this
+                            .selectAll "rect"
+                            .data [d]
+                        rects.enter()
+                            .append "rect"
+                            .attr "x", width - margin.right - margin.left - legend_square_size
+                            .attr "width", legend_square_size
+                            .attr "height", legend_square_size
+                        rects
+                            .style "fill", color_scale
+                        texts = d3.select this
+                            .selectAll "text"
+                            .data [d]
+                        texts.enter()
+                            .append "text"
+                            .attr "x", width - margin.right - margin.left - legend_square_size - 2
+                            .attr "y", 9
+                            .attr "dy", ".35em"
+                            .style "text-anchor", "end"
+                        texts
+                            .text (d) -> d
 
-            #update legend
-            legends = g.select "g.legends"
-                .selectAll "g.legend"
-                .data color_scale.domain()
+                legends
+                    .attr "transform", (d, i) -> "translate(0, #{(legend_square_size + 2) * i})"
 
-            l_enter = legends
-                .enter()
-                .append "g"
-                .classed "legend", true
-
-            legends
-                .each (d) ->
-                    rects = d3.select this
-                        .selectAll "rect"
-                        .data [d]
-                    rects.enter()
-                        .append "rect"
-                        .attr "x", width - margin.right - margin.left - legend_square_size
-                        .attr "width", legend_square_size
-                        .attr "height", legend_square_size
-                    rects
-                        .style "fill", color_scale
-                    texts = d3.select this
-                        .selectAll "text"
-                        .data [d]
-                    texts.enter()
-                        .append "text"
-                        .attr "x", width - margin.right - margin.left - legend_square_size - 2
-                        .attr "y", 9
-                        .attr "dy", ".35em"
-                        .style "text-anchor", "end"
-                    texts
-                        .text (d) -> d
-
-            legends
-                .attr "transform", (d, i) -> "translate(0, #{(legend_square_size + 2) * i})"
-
-            legends
-                .exit()
-                .remove()
+                legends
+                    .exit()
+                    .remove()
 
             #update axes
             g.select ".x.axis"
@@ -162,6 +142,30 @@ d3.chart.scatter = ->
             g.select ".y.axis"
                 .transition()
                 .call y_axis
+
+            #update line after axes so that the line appears above the ticks
+            lines = g.select ".paths"
+                .selectAll ".path"
+                .data (d) -> d
+
+            lines
+                .enter()
+                .append "path"
+                .classed "path", true
+
+            lines
+                .transition()
+                .duration(500)
+                .attr "stroke", (d) -> color_scale(d.color)
+                .attr "d", (d) -> (d3.svg.line()
+                    .x (d) -> x_scale(d.x)
+                    .y (d) -> y_scale(d.y)
+                    )(d)
+
+            lines
+                .exit()
+                .remove()
+
 
     chart.width = (value) ->
         if not arguments.length
@@ -221,12 +225,6 @@ d3.chart.scatter = ->
         if not arguments.length
             return legend_square_size
         legend_square_size = value
-        chart
-
-    chart.radius = (value) ->
-        if not arguments.length
-            return radius
-        radius = value
         chart
 
     chart.y_scale = (value) ->

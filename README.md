@@ -1,4 +1,4 @@
 d3.line
 ==========
 
-Plot svg:line object perfect for plotting functions
+Plot svg:path object perfect for plotting functions
