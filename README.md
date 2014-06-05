@@ -1,4 +1,4 @@
-d3.scatter
+d3.line
 ==========
 
-reusable scatterplot component
+Plot svg:line object perfect for plotting functions
