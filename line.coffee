@@ -32,16 +32,13 @@ d3.chart.line = ->
             #convert to standard format
             data = data.map (d, i) ->
                 {
+                    color: color_value(d)
                     values: d.values.map (e, j) ->
                         {
-                            color: color_value(d)
                             x: x_value.call(d.values, e, j),
                             y: y_value.call(d.values, e, j)
                         }
                 }
-
-            #flatten the structure
-            data = (data.map (d) -> d.values).reduce (a, b) -> a.concat b
 
             #update scales
             x_scale
@@ -146,7 +143,7 @@ d3.chart.line = ->
             #update line after axes so that the line appears above the ticks
             lines = g.select ".paths"
                 .selectAll ".path"
-                .data (d) -> d
+                .data data
 
             lines
                 .enter()
@@ -160,7 +157,7 @@ d3.chart.line = ->
                 .attr "d", (d) -> (d3.svg.line()
                     .x (d) -> x_scale(d.x)
                     .y (d) -> y_scale(d.y)
-                    )(d)
+                    )(d.values)
 
             lines
                 .exit()
