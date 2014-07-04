@@ -212,22 +212,34 @@ d3.chart.line = ->
         y_title = value
         chart
 
-    chart.x_scale = (value) ->
-        if not arguments.length
-            return x_scale
-        x_scale = value
-        chart
-
     chart.legend_square_size = (value) ->
         if not arguments.length
             return legend_square_size
         legend_square_size = value
         chart
 
+    chart.x_scale = (value) ->
+        if not arguments.length
+            return x_scale
+        x_scale = value
+        chart
+
     chart.y_scale = (value) ->
         if not arguments.length
             return y_scale
         y_scale = value
+        chart
+
+    chart.x_axis = (value) ->
+        if not arguments.length
+            return x_axis
+        x_axis = value
+        chart
+
+    chart.y_axis = (value) ->
+        if not arguments.length
+            return y_axis
+        y_axis = value
         chart
 
     chart
