@@ -5,6 +5,7 @@ d3.chart.line = ->
     margin = {top: 20, right: 20, bottom: 40, left: 70}
     width = 900
     height = 600
+    interpolation = "linear"
     legend_square_size = 18
     x_value = (d, i) -> d[0]
     y_value = (d, i) -> d[1]
@@ -119,7 +120,7 @@ d3.chart.line = ->
                             .append "text"
                             .attr "x", width - margin.right - margin.left - legend_square_size - 2
                             .attr "y", 9
-                            .attr "dy", ".35em"
+                            .attr "dy", legend_square_size / 2
                             .style "text-anchor", "end"
                         texts
                             .text (d) -> d
@@ -155,6 +156,7 @@ d3.chart.line = ->
                 .duration(500)
                 .attr "stroke", (d) -> color_scale(d.color)
                 .attr "d", (d) -> (d3.svg.line()
+                    .interpolate interpolation
                     .x (d) -> x_scale(d.x)
                     .y (d) -> y_scale(d.y)
                     )(d.values)
@@ -210,6 +212,12 @@ d3.chart.line = ->
         if not arguments.length
             return y_title
         y_title = value
+        chart
+
+    chart.interpolation = (value) ->
+        if not arguments.length
+            return interpolation
+        interpolation = value
         chart
 
     chart.legend_square_size = (value) ->
