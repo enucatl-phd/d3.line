@@ -62,7 +62,6 @@ d3.chart.line = ->
                 .classed "label", true
                 .attr "x", width - margin.right - margin.left
                 .attr "y", margin.bottom - 6
-                .attr "dy", ".21em"
                 .style "text-anchor", "end"
                 .text x_title
             g_enter.append "g"
@@ -230,6 +229,12 @@ d3.chart.line = ->
         if not arguments.length
             return x_scale
         x_scale = value
+        chart
+
+    chart.color_scale = (value) ->
+        if not arguments.length
+            return color_scale
+        color_scale = value
         chart
 
     chart.y_scale = (value) ->
