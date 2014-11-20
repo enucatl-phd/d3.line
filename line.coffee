@@ -11,75 +11,73 @@ class d3.chart.Line extends d3.chart.BaseChart
 
     _draw: (element, data, i) ->
                  
-            #convenience accessors
-            width = @width()
-            height = @height()
-            margin = @margin()
-            interpolation = @interpolation()
-            x_value = @x_value()
-            y_value = @y_value()
-            x_scale = @x_scale()
-            y_scale = @y_scale()
-            color_value = @color_value()
-            color_scale = @color_scale()
+        # convenience accessors
+        width = @width()
+        height = @height()
+        margin = @margin()
+        interpolation = @interpolation()
+        x_value = @x_value()
+        y_value = @y_value()
+        x_scale = @x_scale()
+        y_scale = @y_scale()
+        color_value = @color_value()
+        color_scale = @color_scale()
 
-            #get unique color names
-            color_names = (data.map color_value).filter (d, i, self) ->
-                self.indexOf d == i
+        # get unique color names
+        color_names = (data.map color_value).filter (d, i, self) ->
+            self.indexOf d == i
 
-            color_scale.domain color_names
+        color_scale.domain color_names
 
-            #update scales
-            x_scale.range [0, width]
+        # update scales
+        x_scale.range [0, width]
 
-            y_scale.range [height, 0]
+        y_scale.range [height, 0]
 
-            #select the svg if it exists
-            svg = d3.select element
-                .selectAll "svg"
-                .data [data]
+        # select the svg if it exists
+        svg = d3.select element
+            .selectAll "svg"
+            .data [data]
 
-            #otherwise create the skeletal chart
-            g_enter = svg.enter()
-                .append "svg"
-                .append "g"
+        # otherwise create the skeletal chart
+        g_enter = svg.enter()
+            .append "svg"
+            .append "g"
 
-            #update the dimensions
-            svg
-                .attr "width", width + margin.left + margin.right
-                .attr "height", height + margin.top + margin.bottom
+        # update the dimensions
+        svg
+            .attr "width", width + margin.left + margin.right
+            .attr "height", height + margin.top + margin.bottom
 
-            #update position
-            g = svg.select "g"
-                .attr "transform", "translate(#{margin.left}, #{margin.top})"
+        # update position
+        g = svg.select "g"
+            .attr "transform", "translate(#{margin.left}, #{margin.top})"
 
-            g
-                .selectAll ".paths"
-                .data [data]
-                .enter()
-                .append "g"
-                .classed "paths", true
+        g
+            .selectAll ".paths"
+            .data [data]
+            .enter()
+            .append "g"
+            .classed "paths", true
 
-            #update lines
-            lines = g.select ".paths"
-                .selectAll ".path"
-                .data (d) -> d
+        # update lines
+        lines = g.select ".paths"
+            .selectAll ".path"
+            .data (d) -> d
 
-            console.log data
+        lines
+            .enter()
+            .append "path"
+            .classed "path", true
 
-            lines
-                .enter()
-                .append "path"
-                .classed "path", true
+        lines
+            .attr "stroke", (d) -> color_scale(d.color)
+            .attr "d", (d) -> (d3.svg.line()
+                .interpolate interpolation
+                .x (e) -> x_scale x_value e
+                .y (e) -> y_scale y_value e
+                )(d.values)
 
-            lines
-                .attr "stroke", (d) -> color_scale(d.color)
-                .attr "d", (d) -> (d3.svg.line()
-                    .interpolate interpolation
-                    .x (e) -> x_scale x_value e
-                    .y (e) -> y_scale y_value e
-                    )(d.values)
-
-            lines
-                .exit()
-                .remove()
+        lines
+            .exit()
+            .remove()
