@@ -12,6 +12,9 @@ class d3.chart.Line extends d3.chart.BaseChart
     _draw: (element, data, i) ->
                  
             #convenience accessors
+            width = @width()
+            height = @height()
+            margin = @margin()
             interpolation = @interpolation()
             x_value = @x_value()
             y_value = @y_value()
@@ -40,8 +43,6 @@ class d3.chart.Line extends d3.chart.BaseChart
             g_enter = svg.enter()
                 .append "svg"
                 .append "g"
-            g_enter.append "g"
-                .classed "paths", true
 
             #update the dimensions
             svg
@@ -52,10 +53,19 @@ class d3.chart.Line extends d3.chart.BaseChart
             g = svg.select "g"
                 .attr "transform", "translate(#{margin.left}, #{margin.top})"
 
+            g
+                .selectAll ".paths"
+                .data [data]
+                .enter()
+                .append "g"
+                .classed "paths", true
+
             #update lines
             lines = g.select ".paths"
                 .selectAll ".path"
-                .data data
+                .data (d) -> d
+
+            console.log data
 
             lines
                 .enter()
