@@ -30,9 +30,12 @@ class d3.chart.Line extends d3.chart.BaseChart
         color_scale.domain color_names
 
         # update scales
-        x_scale.range [0, width]
-
-        y_scale.range [height, 0]
+        x_scale
+            .range [0, width]
+            .domain d3.extent data[0].values, x_value
+        y_scale
+            .range [height, 0]
+            .domain d3.extent data[0].values, y_value
 
         # select the svg if it exists
         svg = d3.select element
@@ -71,7 +74,7 @@ class d3.chart.Line extends d3.chart.BaseChart
             .classed "path", true
 
         lines
-            .attr "stroke", (d) -> color_scale(d.color)
+            .attr "stroke", (d) -> color_scale(d.name)
             .attr "d", (d) -> (d3.svg.line()
                 .interpolate interpolation
                 .x (e) -> x_scale x_value e
