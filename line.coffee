@@ -30,12 +30,8 @@ class d3.chart.Line extends d3.chart.BaseChart
         color_scale.domain color_names
 
         # update scales
-        x_scale
-            .range [0, width]
-            .domain d3.extent data[0].values, x_value
-        y_scale
-            .range [height, 0]
-            .domain d3.extent data[0].values, y_value
+        x_scale.range [0, width]
+        y_scale.range [height, 0]
 
         # select the svg if it exists
         svg = d3.select element
