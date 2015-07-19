@@ -70,7 +70,7 @@ class d3.chart.Line extends d3.chart.BaseChart
             .classed "path", true
 
         lines
-            .attr "stroke", (d) -> color_scale(d.name)
+            .attr "stroke", (d) -> color_scale color_value d
             .attr "d", (d) -> (d3.svg.line()
                 .interpolate interpolation
                 .x (e) -> x_scale x_value e
